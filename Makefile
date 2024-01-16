@@ -1,43 +1,17 @@
-NAME		= btc
-	
-CC			= c++
-FLAGS		= -Wall -Wextra -Werror -std=c++98
-RM			= rm -rf
+all:
+	@docker compose -f ./srcs/docker-compose.yml up -d --build
 
-OBJDIR =	 .objFiles
+down:
+	@docker compose -f ./srcs/docker-compose.yml down
 
-FILES		= main BitcoinExchange
-
-HEADER		= BitcoinExchange.hpp
-SRC			= $(FILES:=.cpp)
-OBJ			= $(addprefix $(OBJDIR)/, $(FILES:=.o))
-
-#Colors:
-GREEN		=	\e[92;1;118m
-YELLOW		=	\e[93;1;226m
-RED			=	\e[33;1;31m
-GRAY		=	\e[33;2;37m
-RESET		=	\e[0m
-CURSIVE		=	\e[33;3m
-
-all: $(NAME)
-
-$(NAME): $(OBJ) $(HEADER)
-	@$(CC) $(OBJ) $(FLAGS) -o $(NAME)
-	@printf "$(_SUCCESS) $(GREEN)- Executable ready.\n$(RESET)"
-
-$(OBJDIR)/%.o: %.cpp $(HEADER)
-	@mkdir -p $(dir $@)
-	@$(CC) $(FLAGS) -c $< -o $@
+re:
+	@docker compose -f srcs/docker-compose.yml up -d --build
 
 clean:
-	@$(RM) $(OBJDIR) $(OBJ)
-	@printf "$(YELLOW)    - Object files removed.$(RESET)\n"
+	@docker stop $$(docker ps -qa);\
+	docker rm $$(docker ps -qa);\
+	docker rmi -f $$(docker images -qa);\
+	docker volume rm $$(docker volume ls -q);\
+	docker network rm $$(docker network ls -q);\
 
-fclean: clean
-	@$(RM) $(NAME)
-	@printf "$(RED)    - Executable removed.$(RESET)\n"
-
-re: fclean all
-
-.PHONY: all clean fclean re bonus norm
+.PHONY: all re down clean
