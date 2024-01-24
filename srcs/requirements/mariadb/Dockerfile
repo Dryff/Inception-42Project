@@ -21,3 +21,5 @@ RUN service mariadb start && \
 	mysqladmin -u root -p$SQL_ROOT_PASSWORD shutdown
 
 CMD ["mysqld_safe"]
+
+EXPOSE 3306
