@@ -1,17 +1,24 @@
-all:
-	@docker compose -f ./srcs/docker-compose.yml up -d --build
+include srcs/.env
+
+all:	$(WP_VOLUME_PATH) $(MARIADB_VOLUME_PATH)
+		docker compose -f ./srcs/docker-compose.yml up --build
 
 down:
-	@docker compose -f ./srcs/docker-compose.yml down
+	docker compose -f ./srcs/docker-compose.yml down -v
 
-re:
-	@docker compose -f srcs/docker-compose.yml up -d --build
+re: fclean
+	$(MAKE) all
 
 clean:
-	@docker stop $$(docker ps -qa);\
-	docker rm $$(docker ps -qa);\
-	docker rmi -f $$(docker images -qa);\
-	docker volume rm $$(docker volume ls -q);\
-	docker network rm $$(docker network ls -q);\
+	docker compose -f srcs/docker-compose.yml down --volumes --rmi all
 
-.PHONY: all re down clean
+fclean:
+	rm -rf $(WP_VOLUME_PATH) $(MARIADB_VOLUME_PATH)
+
+$(WP_VOLUME_PATH):
+	mkdir -p $(WP_VOLUME_PATH)
+
+$(MARIADB_VOLUME_PATH):
+	mkdir -p $(MARIADB_VOLUME_PATH)
+
+.PHONY: all re down clean fclean

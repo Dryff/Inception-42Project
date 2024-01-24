@@ -3,11 +3,17 @@ version: '3'
 services:
  mariadb:
    container_name: mariadb
+   image: mariadb
    networks:
      - inception
    build:
      context: requirements/mariadb
      dockerfile: Dockerfile
+     args:
+     - SQL_DATABASE: $SQL_DATABASE
+     - SQL_USER: $SQL_USER
+     - SQL_PASSWORD: $SQL_PASSWORD
+     - SQL_ROOT_PASSWORD: $SQL_ROOT_PASSWORD
    env_file: .env
    volumes:
      - mariadb:/var/lib/mysql
@@ -17,6 +23,7 @@ services:
 
  nginx:
    container_name: nginx
+   image: nginx
    volumes:
      - wordpress:/var/www/wordpress
    networks:
@@ -26,6 +33,9 @@ services:
    build:
      context: requirements/nginx
      dockerfile: Dockerfile
+     args:
+      WP_PATH: $WP_PATH
+      WP_URL: $WP_URL
    env_file: .env
    ports:
      - "443:443"
@@ -33,6 +43,7 @@ services:
 
  wordpress:
    container_name: wordpress
+   image: wordpress
    env_file: .env
    volumes:
      - wordpress:/var/www/wordpress
@@ -53,13 +64,13 @@ volumes:
    driver_opts:
      type: 'none'
      o: 'bind'
-     device: '/Users/cgelin/data/wordpress'
+     device: '/home/cgelin/data/'
  mariadb:
    driver: local
    driver_opts:
      type: 'none'
      o: 'bind'
-     device: '/Users/cgelin/data/mariadb'
+     device: '/home/cgelin/data/'
 
 networks:
  inception:
