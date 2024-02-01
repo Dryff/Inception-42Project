@@ -6,14 +6,11 @@ all:	$(WP_VOLUME_PATH) $(MARIADB_VOLUME_PATH)
 down:
 		docker compose -f ./srcs/docker-compose.yml down -v
 
-re:		fclean
+re:		clean
 		$(MAKE) all
 
 clean:
-		docker compose -f srcs/docker-compose.yml down --volumes --rmi all
-
-fclean:	clean
-		rm -rf $(WP_VOLUME_PATH) $(MARIADB_VOLUME_PATH)
+		docker compose -f srcs/docker-compose.yml down -v --rmi all
 
 $(WP_VOLUME_PATH):
 		mkdir -p $(WP_VOLUME_PATH)
